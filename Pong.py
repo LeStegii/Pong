@@ -45,7 +45,7 @@ TEXT_SCORE = "%s | %s"
 TITLE_WIDTH = 434
 
 pygame.font.init()
-font_title = pygame.freetype.SysFont("Consolas", 40) # width = 434
+font_title = pygame.freetype.SysFont("Consolas", 40)
 font_controls = pygame.freetype.SysFont("Consolas", 30)
 
 
@@ -66,7 +66,7 @@ display = pygame.display
 window = display.set_mode((width,height))
 display.set_caption("Pong")
 
-# Ball - pygame.Rect(x,y,w,h)
+# Ball
 
 ball_move_x = 7
 ball_move_y = 7
@@ -120,5 +120,3 @@ while True:
 
     display.flip()
     clock.tick(60)
-
-#    title 434 pixel
