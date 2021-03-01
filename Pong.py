@@ -44,8 +44,6 @@ TEXT_CONTROLS_2 = "Player 2: ↑/↓"
 TEXT_WIN = "Player {} won the game!"
 TEXT_SCORE = "{} | {}"
 
-TITLE_WIDTH = 434
-
 pygame.font.init()
 font_big = pygame.freetype.SysFont("Consolas", 40)
 font_middle = pygame.freetype.SysFont("Consolas", 30)
