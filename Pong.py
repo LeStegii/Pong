@@ -8,6 +8,8 @@ import pygame.freetype
 
 import time
 
+import random
+
 # PyGame Setup
 
 pygame.init()
@@ -48,7 +50,6 @@ pygame.font.init()
 font_title = pygame.freetype.SysFont("Consolas", 40)
 font_controls = pygame.freetype.SysFont("Consolas", 30)
 
-
 # Math
 
 def get_start_x(player):
@@ -80,8 +81,7 @@ def move_ball():
     if ball.top <= 0 or ball.bottom >= HEIGTH:
         switch_direction("y")
     if ball.left <= 0 or ball.right >= WIDTH:
-        switch_direction("x")
-
+        reset_ball()
 
 def switch_direction(dir):
     global ball_move_x, ball_move_y
@@ -89,6 +89,12 @@ def switch_direction(dir):
         ball_move_x *= -1 
     elif dir == "y":
         ball_move_y *= -1 
+
+def reset_ball():
+    global ball_move_x, ball_move_y
+    ball.center = (WIDTH/2, HEIGTH/2)
+    ball_move_x *= random.choice((1,-1))
+    ball_move_y *= random.choice((1,-1))
 
 ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SIZE)
 
@@ -155,6 +161,7 @@ def check_events():
             if event.key == pygame.K_SPACE:
                 game_started = True
                 time.sleep(1)
+                reset_ball()
             if game_started:
                 check_player_keys_down(event)
         if event.type == pygame.KEYUP:
