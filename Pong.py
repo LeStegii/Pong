@@ -65,6 +65,8 @@ def get_start_y():
 display = pygame.display
 window = display.set_mode((WIDTH, HEIGTH))
 display.set_caption("Pong")
+image = pygame.image.load(sys.path[0] + "/icon.png")
+display.set_icon(image)
 
 # Ball
 
