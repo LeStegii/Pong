@@ -36,6 +36,8 @@ BALL_SIZE = 25
 UP = -3
 DOWN = 3
 
+BALL_SPEED = 3
+
 # Text
 
 TEXT_TITLE = "Press SPACE to start"
@@ -43,13 +45,18 @@ TEXT_CONTROLS_1 = "Player 1: W/S"
 TEXT_CONTROLS_2 = "Player 2: ↑/↓"
 TEXT_WIN = "Player {} won the game!"
 TEXT_SCORE = "{} | {}"
+TEXT_TIMER = "{}"
 
 pygame.font.init()
 font_big = pygame.freetype.SysFont("Consolas", 40)
 font_middle = pygame.freetype.SysFont("Consolas", 30)
+font_small = pygame.freetype.SysFont("Consolas", 20)
 
 def get_formatted_score():
     return TEXT_SCORE.format(score[1], score[2])
+
+def get_formatted_timer(counter):
+    return TEXT_TIMER.format(counter)
 
 # Math
 
@@ -72,21 +79,21 @@ display.set_icon(image)
 
 # Ball
 
-ball_move_x = 3
-ball_move_y = 3
+ball_move_x = BALL_SPEED
+ball_move_y = BALL_SPEED
 
 def move_ball():
-    global ball_move_x, ball_move_y, ball
+    global ball_move_x, ball_move_y, ball, score_timer
     ball.x += ball_move_x
     ball.y += ball_move_y
     if ball.top <= 0 or ball.bottom >= HEIGTH:
         switch_direction("y")
     if ball.left <= 0:
-        reset_ball()
         add_point(2)
+        score_timer = pygame.time.get_ticks()
     if ball.right >= WIDTH:
-        reset_ball()
         add_point(1)
+        score_timer = pygame.time.get_ticks()
 
 def switch_direction(dir):
     global ball_move_x, ball_move_y
@@ -95,13 +102,33 @@ def switch_direction(dir):
     elif dir == "y":
         ball_move_y *= -1 
 
+def start_ball():
+    global score_timer
+    score_timer = pygame.time.get_ticks()
+    reset_ball()
+
 def reset_ball():
-    global ball_move_x, ball_move_y
+    global ball_move_x, ball_move_y, score_timer
     ball.center = (WIDTH/2, HEIGTH/2)
-    ball_move_x *= random.choice((1,-1))
-    ball_move_y *= random.choice((1,-1))
+    difference = pygame.time.get_ticks() - score_timer
+    counter = 1
+    if difference <= 3000:
+        if difference < 1000:
+            counter = 3
+        elif difference < 2000:
+            counter = 2
+        font_small.render_to(window, ((WIDTH/2 - (font_small.get_rect(get_formatted_timer(counter)).width)/2), HEIGTH/2+30), get_formatted_timer(counter), WHITE)
+        ball_move_x, ball_move_y = 0,0
+    else:
+        ball_move_x = BALL_SPEED * random.choice((1,-1))
+        ball_move_y = BALL_SPEED * random.choice((1,-1))
+        score_timer = None
 
 ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SIZE)
+
+# Score timer
+
+score_timer = None
 
 # Player
 
@@ -150,6 +177,9 @@ def animate_obj():
     pygame.draw.rect(window, WHITE, player1)
     pygame.draw.rect(window, WHITE, player2)
 
+    if score_timer:
+        reset_ball()
+
     if (player1.colliderect(ball) or player2.colliderect(ball)):
         switch_direction("x")
 
@@ -176,8 +206,7 @@ def check_events():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 game_started = True
-                time.sleep(1)
-                reset_ball()
+                start_ball()
             if game_started:
                 check_player_keys_down(event)
         if event.type == pygame.KEYUP:
