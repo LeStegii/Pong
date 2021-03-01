@@ -6,6 +6,8 @@ import sys
 import pygame
 import pygame.freetype
 
+import time
+
 # PyGame Setup
 
 pygame.init()
@@ -98,6 +100,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 game_started = True
+                time.sleep(1)
             if event.key == pygame.K_DOWN and game_started:
                 player2.y += DOWN
             if event.key == pygame.K_UP and game_started:
