@@ -100,13 +100,13 @@ player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH
 player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 
 def move_players():
-    if pressed.get(pygame.K_UP):
+    if pressed.get(pygame.K_UP) and not player2.top <= 0:
         player2.y += UP
-    elif pressed.get(pygame.K_DOWN):
+    elif pressed.get(pygame.K_DOWN) and not player2.bottom >= HEIGTH:
         player2.y += DOWN
-    if pressed.get(pygame.K_w):
+    if pressed.get(pygame.K_w) and not player1.top <= 0:
         player1.y += UP
-    elif pressed.get(pygame.K_s):
+    elif pressed.get(pygame.K_s) and not player1.bottom >= HEIGTH:
         player1.y += DOWN
 
 def check_player_keys_down(event):
@@ -117,12 +117,36 @@ def check_player_keys_up(event):
     if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_s or event.key == pygame.K_w:
         pressed[event.key] = False
 
-# Draw
+# Animation
 
+def animate():
+    window.fill(GRAY)
+    if game_started:
+        animate_obj()
+    else:
+        show_start_menu()
 
-# Game Thread
+def animate_obj():
+    pygame.draw.rect(window, WHITE, ball)
+    pygame.draw.rect(window, WHITE, player1)
+    pygame.draw.rect(window, WHITE, player2)
 
-while True:
+    if (player1.colliderect(ball) or player2.colliderect(ball)):
+        switch_direction("x")
+
+    move_ball()
+    move_players()
+
+def show_start_menu():
+    # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
+    font_title.render_to(window, (WIDTH/2-(font_title.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
+    font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
+    font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
+
+# Events
+
+def check_events():
+    global game_started
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -136,19 +160,11 @@ while True:
         if event.type == pygame.KEYUP:
             if game_started:
                 check_player_keys_up(event)
-    
-    window.fill(GRAY)
-    if not game_started:
-        # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
-        font_title.render_to(window, (WIDTH/2-(font_title.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
-        font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
-        font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
-    else:
-        pygame.draw.rect(window, WHITE, ball)
-        pygame.draw.rect(window, WHITE, player1)
-        pygame.draw.rect(window, WHITE, player2)
-        move_ball()
-        move_players()
 
+# Game Thread
+
+while True:
+    check_events()
+    animate()
     display.flip()
     clock.tick(120)
