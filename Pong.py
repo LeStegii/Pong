@@ -31,8 +31,8 @@ PLAYER_HEIGTH = 180
 
 BALL_SIZE = 25
 
-UP = -(HEIGTH/64)
-DOWN = HEIGTH/64
+UP = -3
+DOWN = 3
 
 # Text
 
@@ -94,8 +94,28 @@ ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SI
 
 # Player
 
+pressed = {}
+
 player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
+
+def move_players():
+    if pressed.get(pygame.K_UP):
+        player2.y += UP
+    elif pressed.get(pygame.K_DOWN):
+        player2.y += DOWN
+    if pressed.get(pygame.K_w):
+        player1.y += UP
+    elif pressed.get(pygame.K_s):
+        player1.y += DOWN
+
+def check_player_keys_down(event):
+    if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_s or event.key == pygame.K_w:
+        pressed[event.key] = True
+
+def check_player_keys_up(event):
+    if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_s or event.key == pygame.K_w:
+        pressed[event.key] = False
 
 # Draw
 
@@ -111,14 +131,11 @@ while True:
             if event.key == pygame.K_SPACE:
                 game_started = True
                 time.sleep(1)
-            if event.key == pygame.K_DOWN and game_started:
-                player2.y += DOWN
-            if event.key == pygame.K_UP and game_started:
-                player2.y += UP
-            if event.key == pygame.K_s and game_started:
-                player1.y += DOWN
-            if event.key == pygame.K_w and game_started:
-                player1.y += UP
+            if game_started:
+                check_player_keys_down(event)
+        if event.type == pygame.KEYUP:
+            if game_started:
+                check_player_keys_up(event)
     
     window.fill(GRAY)
     if not game_started:
@@ -131,6 +148,7 @@ while True:
         pygame.draw.rect(window, WHITE, player1)
         pygame.draw.rect(window, WHITE, player2)
         move_ball()
+        move_players()
 
     display.flip()
     clock.tick(120)
