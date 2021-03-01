@@ -1,9 +1,7 @@
 # Imports
 
-import functools
 import os
 import sys
-from tkinter import PhotoImage
 
 import pygame
 import pygame.freetype
