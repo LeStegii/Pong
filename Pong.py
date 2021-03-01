@@ -41,14 +41,17 @@ DOWN = 3
 TEXT_TITLE = "Press SPACE to start"
 TEXT_CONTROLS_1 = "Player 1: W/S"
 TEXT_CONTROLS_2 = "Player 2: ↑/↓"
-TEXT_WIN = "Player %s won the game!"
-TEXT_SCORE = "%s | %s"
+TEXT_WIN = "Player {} won the game!"
+TEXT_SCORE = "{} | {}"
 
 TITLE_WIDTH = 434
 
 pygame.font.init()
-font_title = pygame.freetype.SysFont("Consolas", 40)
-font_controls = pygame.freetype.SysFont("Consolas", 30)
+font_big = pygame.freetype.SysFont("Consolas", 40)
+font_middle = pygame.freetype.SysFont("Consolas", 30)
+
+def get_formatted_score():
+    return TEXT_SCORE.format(score[1], score[2])
 
 # Math
 
@@ -80,8 +83,12 @@ def move_ball():
     ball.y += ball_move_y
     if ball.top <= 0 or ball.bottom >= HEIGTH:
         switch_direction("y")
-    if ball.left <= 0 or ball.right >= WIDTH:
+    if ball.left <= 0:
         reset_ball()
+        add_point(2)
+    if ball.right >= WIDTH:
+        reset_ball()
+        add_point(1)
 
 def switch_direction(dir):
     global ball_move_x, ball_move_y
@@ -101,9 +108,13 @@ ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SI
 # Player
 
 pressed = {}
+score = {}
 
 player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
+
+score[1] = 0
+score[2] = 0
 
 def move_players():
     if pressed.get(pygame.K_UP) and not player2.top <= 0:
@@ -123,12 +134,16 @@ def check_player_keys_up(event):
     if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_s or event.key == pygame.K_w:
         pressed[event.key] = False
 
+def add_point(player):
+    score[player] = score[player] + 1
+
 # Animation
 
 def animate():
     window.fill(GRAY)
     if game_started:
         animate_obj()
+        show_score()
     else:
         show_start_menu()
 
@@ -145,9 +160,12 @@ def animate_obj():
 
 def show_start_menu():
     # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
-    font_title.render_to(window, (WIDTH/2-(font_title.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
-    font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
-    font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
+    font_big.render_to(window, (WIDTH/2-(font_big.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
+    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
+    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
+
+def show_score():
+    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(get_formatted_score()).width/2), 10), get_formatted_score(), WHITE)
 
 # Events
 
