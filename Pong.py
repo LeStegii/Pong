@@ -70,8 +70,18 @@ display.set_icon(image)
 
 # Ball
 
-ball_move_x = 7
-ball_move_y = 7
+ball_move_x = 3
+ball_move_y = 3
+
+def move_ball():
+    global ball_move_x, ball_move_y, ball
+    ball.x += ball_move_x
+    ball.y += ball_move_y
+    if ball.top <= 0 or ball.bottom >= HEIGTH:
+        switch_direction("y")
+    if ball.left <= 0 or ball.right >= WIDTH:
+        switch_direction("x")
+
 
 def switch_direction(dir):
     global ball_move_x, ball_move_y
@@ -80,7 +90,7 @@ def switch_direction(dir):
     elif dir == "y":
         ball_move_y *= -1 
 
-ball = pygame.Rect(WIDTH/2-15, HEIGTH/2-15, BALL_SIZE, BALL_SIZE)
+ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SIZE)
 
 # Player
 
@@ -116,10 +126,11 @@ while True:
         font_title.render_to(window, (WIDTH/2-(font_title.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
         font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
         font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
-    else:  
+    else:
         pygame.draw.rect(window, WHITE, ball)
         pygame.draw.rect(window, WHITE, player1)
         pygame.draw.rect(window, WHITE, player2)
+        move_ball()
 
     display.flip()
-    clock.tick(60)
+    clock.tick(120)
