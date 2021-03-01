@@ -15,7 +15,7 @@ import random
 pygame.init()
 clock = pygame.time.Clock()
 
-game_started = False
+game_state = "MENU"
 
 # Static variables
 
@@ -41,6 +41,7 @@ BALL_SPEED = 3
 # Text
 
 TEXT_TITLE = "Press SPACE to start"
+TEXT_RESTART = "Press SPACE to restart the game."
 TEXT_CONTROLS_1 = "Player 1: W/S"
 TEXT_CONTROLS_2 = "Player 2: ↑/↓"
 TEXT_WIN = "Player {} won the game!"
@@ -57,6 +58,9 @@ def get_formatted_score():
 
 def get_formatted_timer(counter):
     return TEXT_TIMER.format(counter)
+
+def get_formatted_winner(winner):
+    return TEXT_WIN.format(winner)
 
 # Math
 
@@ -132,6 +136,9 @@ score_timer = None
 
 # Player
 
+winning_score = 1
+winner = 0
+
 pressed = {}
 score = {}
 
@@ -160,17 +167,23 @@ def check_player_keys_up(event):
         pressed[event.key] = False
 
 def add_point(player):
+    global winner, game_state
     score[player] = score[player] + 1
+    if score[player] >= winning_score:
+        winner = player
+        game_state = "ENDED"
 
 # Animation
 
 def animate():
     window.fill(GRAY)
-    if game_started:
+    if game_state == "STARTED":
         animate_obj()
         show_score()
-    else:
+    elif game_state == "MENU":
         show_start_menu()
+    elif game_state == "ENDED":
+        show_winner()
 
 def animate_obj():
     pygame.draw.rect(window, WHITE, ball)
@@ -195,22 +208,41 @@ def show_start_menu():
 def show_score():
     font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(get_formatted_score()).width/2), 10), get_formatted_score(), WHITE)
 
+def show_winner():
+   font_big.render_to(window, (WIDTH/2-(font_big.get_rect(get_formatted_winner(winner)).width/2), HEIGTH/2-50), get_formatted_winner(winner), WHITE)
+   font_small.render_to(window, (WIDTH/2-(font_small.get_rect(TEXT_RESTART).width/2), HEIGTH/2 + 10), TEXT_RESTART, WHITE)
+
 # Events
 
 def check_events():
-    global game_started
+    global game_state, winner, pressed, score, ball_move_x, ball_move_y, score_timer
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                game_started = True
-                start_ball()
-            if game_started:
+                if game_state == "MENU":
+                    game_state = "STARTED"
+                    start_ball()
+                elif game_state == "ENDED":
+                    # Resets all the variables
+                    game_state = "MENU"
+                    winner = 0
+                    pressed = {}
+                    score = {}
+                    score[1] = 0
+                    score[2] = 0
+                    ball_move_x = BALL_SPEED
+                    ball_move_y = BALL_SPEED
+                    score_timer = None
+                    player1.x, player1.y = get_start_x(1), get_start_y()
+                    player2.x, player2.y = get_start_x(2), get_start_y()
+                    start_ball()
+            if game_state == "STARTED":
                 check_player_keys_down(event)
         if event.type == pygame.KEYUP:
-            if game_started:
+            if game_state == "STARTED":
                 check_player_keys_up(event)
 
 # Game Thread
