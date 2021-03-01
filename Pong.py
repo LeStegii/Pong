@@ -1,83 +1,124 @@
-# Imports and static Variables
+# Imports
 
-import turtle
-import sys, os
-import functools 
+import functools
+import os
+import sys
 from tkinter import PhotoImage
 
+import pygame
+import pygame.freetype
+
+# PyGame Setup
+
+pygame.init()
+clock = pygame.time.Clock()
+
+game_started = False
+
+# Static variables
+
 BLACK = (0, 0, 0)
-WHITE = (1, 1, 1)
-GRAY = (64/255, 64/255, 64/255)
+WHITE = (255, 255, 255)
+GRAY = (64, 64, 64)
 
-height = 1280
-width = 720
+width = 1280
+height = 720
 
-UP = height/64
-DOWN = -(height/64)
+edge_distance = 50
+
+player_width = 20
+player_hight = 180
+
+ball_size = 25
+
+UP = -(height/64)
+DOWN = height/64
+
+# Text
+
+TEXT_TITLE = "Press SPACE to start"
+TEXT_CONTROLS_1 = "Player 1: W/S"
+TEXT_CONTROLS_2 = "Player 2: ↑/↓"
+TEXT_WIN = "Player %s won the game!"
+TEXT_SCORE = "%s | %s"
+
+TITLE_WIDTH = 434
+
+pygame.font.init()
+font_title = pygame.freetype.SysFont("Consolas", 40) # width = 434
+font_controls = pygame.freetype.SysFont("Consolas", 30)
+
 
 # Math
 
 def get_start_x(player):
     if player == 1:
-        return -width + 120
+        return edge_distance - player_width/2 
     elif player == 2:
-        return width - 120
+        return width - edge_distance - player_width/2
+
+def get_start_y():
+    return height/2 - player_hight/2
 
 # Window
 
-window = turtle.Screen()
-window.title("Pong")
-window.bgcolor(GRAY)
-window.setup(width=height, height=width)
-window.tracer(0)
-window.cv._rootwindow.resizable(False, False)
-program_directory=sys.path[0]
-window.cv._rootwindow.iconphoto(True, PhotoImage(file=os.path.join(program_directory, "icon.png")))
+display = pygame.display
+window = display.set_mode((width,height))
+display.set_caption("Pong")
 
-# Player 
-player_1 = turtle.Turtle()
-player_1.speed(0)
-player_1.shapesize(stretch_wid=5, stretch_len=1)
-player_1.shape("square")
-player_1.color(WHITE)
-player_1.penup()
-player_1.goto(get_start_x(1), 0)
+# Ball - pygame.Rect(x,y,w,h)
 
-# Player 2
-player_2 = turtle.Turtle()
-player_2.shapesize(stretch_wid=5, stretch_len=1)
-player_2.speed(0)
-player_2.shape("square")
-player_2.color(WHITE)
-player_2.penup()
-player_2.goto(get_start_x(2), 0)
+ball_move_x = 7
+ball_move_y = 7
 
-# Ball
-ball = turtle.Turtle()
-ball.speed(0)
-ball.shape("square")
-ball.color(WHITE)
-ball.penup()
-ball.goto(0, 0)
+def switch_direction(dir):
+    global ball_move_x, ball_move_y
+    if dir == "x":
+        ball_move_x *= -1 
+    elif dir == "y":
+        ball_move_y *= -1 
 
-# Movement
+ball = pygame.Rect(width/2-15,height/2-15,30,30)
 
-def move_player(direction, player):
-    if player == 1:
-        player_1.sety(player_1.ycor()+direction)
-    elif player == 2:
-        player_2.sety(player_2.ycor()+direction)
-    print(direction, player)
+# Player
 
-# Keyboard
+player1 = pygame.Rect(get_start_x(1), get_start_y(), player_width, player_hight)
+player2 = pygame.Rect(get_start_x(2), get_start_y(), player_width, player_hight)
 
-window.listen()
-window.onkeypress(functools.partial(move_player, UP, 1), "w")
-window.onkeypress(functools.partial(move_player, DOWN, 1), "s")
-window.onkeypress(functools.partial(move_player, UP, 2), "Up")
-window.onkeypress(functools.partial(move_player, DOWN, 2), "Down")
+# Draw
+
 
 # Game Thread
 
 while True:
-    window.update()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                game_started = True
+            if event.key == pygame.K_DOWN and game_started:
+                player2.y += DOWN
+            if event.key == pygame.K_UP and game_started:
+                player2.y += UP
+            if event.key == pygame.K_s and game_started:
+                player1.y += DOWN
+            if event.key == pygame.K_w and game_started:
+                player1.y += UP
+    
+    window.fill(GRAY)
+    if not game_started:
+        # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
+        font_title.render_to(window, (width/2-(font_title.get_rect(TEXT_TITLE).width/2), height/2-70), TEXT_TITLE, WHITE)
+        font_controls.render_to(window, (width/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), height/2-25), TEXT_CONTROLS_1, WHITE)
+        font_controls.render_to(window, (width/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), height/2+10), TEXT_CONTROLS_2, WHITE)
+    else:  
+        pygame.draw.rect(window, WHITE, ball)
+        pygame.draw.rect(window, WHITE, player1)
+        pygame.draw.rect(window, WHITE, player2)
+
+    display.flip()
+    clock.tick(60)
+
+#    title 434 pixel
