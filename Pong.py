@@ -1,14 +1,12 @@
 # Imports
 
 import os
+import random
 import sys
+import time
 
 import pygame
 import pygame.freetype
-
-import time
-
-import random
 
 # PyGame Setup
 
@@ -21,6 +19,7 @@ game_state = "MENU"
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 128, 0)
 GRAY = (64, 64, 64)
 
 WIDTH = 1280
@@ -136,11 +135,13 @@ score_timer = None
 
 # Player
 
-winning_score = 1
+winning_score = 5
 winner = 0
 
 pressed = {}
 score = {}
+
+bot_player = False
 
 player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
@@ -149,14 +150,20 @@ score[1] = 0
 score[2] = 0
 
 def move_players():
-    if pressed.get(pygame.K_UP) and not player2.top <= 0:
+    if pressed.get(pygame.K_UP) and not player2.top <= 0 and not bot_player:
         player2.y += UP
-    elif pressed.get(pygame.K_DOWN) and not player2.bottom >= HEIGTH:
+    elif pressed.get(pygame.K_DOWN) and not player2.bottom >= HEIGTH and not bot_player:
         player2.y += DOWN
     if pressed.get(pygame.K_w) and not player1.top <= 0:
         player1.y += UP
     elif pressed.get(pygame.K_s) and not player1.bottom >= HEIGTH:
         player1.y += DOWN
+    
+    if bot_player:
+        if ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) < int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.top <= 0:
+            player2.y += UP
+        elif ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) > int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.bottom >= HEIGTH:
+            player2.y += DOWN
 
 def check_player_keys_down(event):
     if event.key == pygame.K_DOWN or event.key == pygame.K_UP or event.key == pygame.K_s or event.key == pygame.K_w:
@@ -188,7 +195,11 @@ def animate():
 def animate_obj():
     pygame.draw.rect(window, WHITE, ball)
     pygame.draw.rect(window, WHITE, player1)
-    pygame.draw.rect(window, WHITE, player2)
+    if bot_player:
+        color = RED
+    else:
+        color = WHITE
+    pygame.draw.rect(window, color, player2)
 
     if score_timer:
         reset_ball()
