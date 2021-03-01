@@ -21,18 +21,18 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GRAY = (64, 64, 64)
 
-width = 1280
-height = 720
+WIDTH = 1280
+HEIGTH = 720
 
-edge_distance = 50
+EDGE_DISTANCE = 50
 
-player_width = 20
-player_hight = 180
+PLAYER_WIDTH = 20
+PLAYER_HEIGTH = 180
 
-ball_size = 25
+BALL_SIZE = 25
 
-UP = -(height/64)
-DOWN = height/64
+UP = -(HEIGTH/64)
+DOWN = HEIGTH/64
 
 # Text
 
@@ -53,17 +53,17 @@ font_controls = pygame.freetype.SysFont("Consolas", 30)
 
 def get_start_x(player):
     if player == 1:
-        return edge_distance - player_width/2 
+        return EDGE_DISTANCE - PLAYER_WIDTH/2 
     elif player == 2:
-        return width - edge_distance - player_width/2
+        return WIDTH - EDGE_DISTANCE - PLAYER_WIDTH/2
 
 def get_start_y():
-    return height/2 - player_hight/2
+    return HEIGTH/2 - PLAYER_HEIGTH/2
 
 # Window
 
 display = pygame.display
-window = display.set_mode((width,height))
+window = display.set_mode((WIDTH, HEIGTH))
 display.set_caption("Pong")
 
 # Ball
@@ -78,12 +78,12 @@ def switch_direction(dir):
     elif dir == "y":
         ball_move_y *= -1 
 
-ball = pygame.Rect(width/2-15,height/2-15,30,30)
+ball = pygame.Rect(WIDTH/2-15, HEIGTH/2-15, BALL_SIZE, BALL_SIZE)
 
 # Player
 
-player1 = pygame.Rect(get_start_x(1), get_start_y(), player_width, player_hight)
-player2 = pygame.Rect(get_start_x(2), get_start_y(), player_width, player_hight)
+player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
+player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 
 # Draw
 
@@ -110,9 +110,9 @@ while True:
     window.fill(GRAY)
     if not game_started:
         # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
-        font_title.render_to(window, (width/2-(font_title.get_rect(TEXT_TITLE).width/2), height/2-70), TEXT_TITLE, WHITE)
-        font_controls.render_to(window, (width/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), height/2-25), TEXT_CONTROLS_1, WHITE)
-        font_controls.render_to(window, (width/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), height/2+10), TEXT_CONTROLS_2, WHITE)
+        font_title.render_to(window, (WIDTH/2-(font_title.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
+        font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
+        font_controls.render_to(window, (WIDTH/2-(font_controls.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
     else:  
         pygame.draw.rect(window, WHITE, ball)
         pygame.draw.rect(window, WHITE, player1)
