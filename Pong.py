@@ -98,6 +98,23 @@ def move_ball():
         add_point(1)
         score_timer = pygame.time.get_ticks()
 
+def check_ball_collision():
+    if player1.colliderect(ball) and ball_move_x < 0:
+        if abs(ball.left - player1.right) <= BALL_SPEED:
+            switch_direction("x")
+            print("changing direction x")
+        elif abs(ball.bottom - player1.top) <= BALL_SPEED or abs(ball.top - player1.bottom) <= BALL_SPEED:
+            switch_direction("y")
+            print("changing direction y")
+    if player2.colliderect(ball) and ball_move_x > 0:
+        if abs(ball.right - player2.left) <= BALL_SPEED:
+            switch_direction("x")
+            print("changing direction x")
+        elif abs(ball.bottom - player2.top) <= BALL_SPEED or abs(ball.top - player2.bottom) <= BALL_SPEED:
+            switch_direction("y")
+            print("changing direction y")
+
+
 def switch_direction(dir):
     global ball_move_x, ball_move_y
     if dir == "x":
@@ -204,8 +221,7 @@ def animate_obj():
     if score_timer:
         reset_ball()
 
-    if (player1.colliderect(ball) or player2.colliderect(ball)):
-        switch_direction("x")
+    check_ball_collision()
 
     move_ball()
     move_players()
