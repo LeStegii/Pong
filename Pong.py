@@ -15,6 +15,11 @@ clock = pygame.time.Clock()
 
 game_state = "MENU"
 
+# Images
+
+player_icon = pygame.image.load(sys.path[0] + "/stuff/player_icon.png")
+bot_icon = pygame.image.load(sys.path[0] + "/stuff/bot_icon.png")
+
 # Static variables
 
 BLACK = (0, 0, 0)
@@ -37,6 +42,8 @@ DOWN = 3
 
 BALL_SPEED = 3
 
+SELECTOR_SIZE = 64
+
 # Text
 
 TEXT_TITLE = "Press SPACE to start"
@@ -44,6 +51,7 @@ TEXT_RESTART = "Press SPACE to restart the game."
 TEXT_CONTROLS_1 = "Player 1: W/S"
 TEXT_CONTROLS_2 = "Player 2: ↑/↓"
 TEXT_WIN = "Player {} won the game!"
+TEXT_BOT_CHANGE = "(Use ←/→ to change)" 
 TEXT_SCORE = "{} | {}"
 TEXT_TIMER = "{}"
 
@@ -150,6 +158,17 @@ ball = pygame.Rect(WIDTH/2-BALL_SIZE/2, HEIGTH/2-BALL_SIZE/2, BALL_SIZE, BALL_SI
 
 score_timer = None
 
+# Bot 
+
+bot_player = False
+selector = pygame.Rect(WIDTH/2-SELECTOR_SIZE/2, HEIGTH/2-SELECTOR_SIZE/2, SELECTOR_SIZE, SELECTOR_SIZE)
+
+def select(pos):
+    if pos == 1:
+        selector.center = (WIDTH/2 - 50, HEIGTH/2+90)
+    elif pos == 2:
+        selector.center = (WIDTH/2 + 50, HEIGTH/2+90)
+
 # Player
 
 winning_score = 5
@@ -158,7 +177,6 @@ winner = 0
 pressed = {}
 score = {}
 
-bot_player = False
 
 player1 = pygame.Rect(get_start_x(1), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
 player2 = pygame.Rect(get_start_x(2), get_start_y(), PLAYER_WIDTH, PLAYER_HEIGTH)
@@ -228,9 +246,17 @@ def animate_obj():
 
 def show_start_menu():
     # renders the start menu text to x = (half of the screen - half of the lenght of the text rectangle)
-    font_big.render_to(window, (WIDTH/2-(font_big.get_rect(TEXT_TITLE).width/2), HEIGTH/2-70), TEXT_TITLE, WHITE)
-    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-25), TEXT_CONTROLS_1, WHITE)
-    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2+10), TEXT_CONTROLS_2, WHITE)
+    font_big.render_to(window, (WIDTH/2-(font_big.get_rect(TEXT_TITLE).width/2), HEIGTH/2-80), TEXT_TITLE, WHITE)
+    font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_1).width/2), HEIGTH/2-35), TEXT_CONTROLS_1, WHITE)
+    if not bot_player:
+        select(1)
+        font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(TEXT_CONTROLS_2).width/2), HEIGTH/2), TEXT_CONTROLS_2, WHITE)
+    else:
+        select(2)
+    pygame.draw.rect(window, RED, selector)
+    window.blit(player_icon, ((WIDTH/2-50-(player_icon.get_width()/2)),HEIGTH/2+90-(player_icon.get_width()/2)))
+    window.blit(bot_icon, ((WIDTH/2+50-(bot_icon.get_width()/2)),HEIGTH/2+90-(bot_icon.get_width()/2)))
+    font_small.render_to(window, (WIDTH/2-(font_small.get_rect(TEXT_BOT_CHANGE).width/2), HEIGTH/2+150), TEXT_BOT_CHANGE, WHITE)
 
 def show_score():
     font_middle.render_to(window, (WIDTH/2-(font_middle.get_rect(get_formatted_score()).width/2), 10), get_formatted_score(), WHITE)
@@ -242,7 +268,7 @@ def show_winner():
 # Events
 
 def check_events():
-    global game_state, winner, pressed, score, ball_move_x, ball_move_y, score_timer
+    global game_state, winner, pressed, score, ball_move_x, ball_move_y, score_timer, bot_player
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -252,6 +278,12 @@ def check_events():
                 if game_state == "MENU":
                     game_state = "STARTED"
                     start_ball()
+            if event.key == pygame.K_RIGHT:
+                if game_state == "MENU":
+                    bot_player = True
+            if event.key == pygame.K_LEFT:
+                if game_state == "MENU":
+                    bot_player = False
                 elif game_state == "ENDED":
                     # Resets all the variables
                     game_state = "MENU"
