@@ -7,8 +7,13 @@ import random
 import sys
 import time
 
-import pygame
-import pygame.freetype
+try:
+    import pygame
+    import pygame.freetype
+except ImportError as e:
+    print("Please install PyGame in order to run this game.\Bitte installiere PyGame, um dieses Spiel zu spielen.\n\npython3 -m pip install -U pygame --user")
+    time.sleep(5)
+    sys.exit()
 
 # PyGame Setup
 
@@ -193,8 +198,8 @@ def move_players():
         player1.y += DOWN
     
     if bot_player:
-        if ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) < int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.top0:
-            player2.y += UP <= 
+        if ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) < int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.top <= 0:
+            player2.y += UP
         elif ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) > int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.bottom >= HEIGTH:
             player2.y += DOWN
 
