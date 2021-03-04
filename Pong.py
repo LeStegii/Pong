@@ -1,3 +1,5 @@
+# Don't judge me for the code style please...
+
 # Imports
 
 import os
@@ -110,17 +112,13 @@ def check_ball_collision():
     if player1.colliderect(ball) and ball_move_x < 0:
         if abs(ball.left - player1.right) <= BALL_SPEED:
             switch_direction("x")
-            print("changing direction x")
         elif abs(ball.bottom - player1.top) <= BALL_SPEED or abs(ball.top - player1.bottom) <= BALL_SPEED:
             switch_direction("y")
-            print("changing direction y")
     if player2.colliderect(ball) and ball_move_x > 0:
         if abs(ball.right - player2.left) <= BALL_SPEED:
             switch_direction("x")
-            print("changing direction x")
         elif abs(ball.bottom - player2.top) <= BALL_SPEED or abs(ball.top - player2.bottom) <= BALL_SPEED:
             switch_direction("y")
-            print("changing direction y")
 
 
 def switch_direction(dir):
@@ -171,7 +169,7 @@ def select(pos):
 
 # Player
 
-winning_score = 5
+winning_score = 1
 winner = 0
 
 pressed = {}
@@ -195,8 +193,8 @@ def move_players():
         player1.y += DOWN
     
     if bot_player:
-        if ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) < int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.top <= 0:
-            player2.y += UP
+        if ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) < int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.top0:
+            player2.y += UP <= 
         elif ball.x >= WIDTH/1.5 and int(round(ball.y+BALL_SIZE/2)) > int(round(player2.y+PLAYER_HEIGTH/2)) and not player2.bottom >= HEIGTH:
             player2.y += DOWN
 
@@ -274,17 +272,16 @@ def check_events():
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                if game_state == "MENU":
+            if game_state == "MENU":
+                if event.key == pygame.K_SPACE:
                     game_state = "STARTED"
                     start_ball()
-            if event.key == pygame.K_RIGHT:
-                if game_state == "MENU":
+                if event.key == pygame.K_RIGHT:
                     bot_player = True
-            if event.key == pygame.K_LEFT:
-                if game_state == "MENU":
+                if event.key == pygame.K_LEFT:
                     bot_player = False
-                elif game_state == "ENDED":
+            elif game_state == "ENDED":
+                if event.key == pygame.K_SPACE:
                     # Resets all the variables
                     game_state = "MENU"
                     winner = 0
@@ -298,7 +295,7 @@ def check_events():
                     player1.x, player1.y = get_start_x(1), get_start_y()
                     player2.x, player2.y = get_start_x(2), get_start_y()
                     start_ball()
-            if game_state == "STARTED":
+            elif game_state == "STARTED":
                 check_player_keys_down(event)
         if event.type == pygame.KEYUP:
             if game_state == "STARTED":
