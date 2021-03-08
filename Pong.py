@@ -26,6 +26,8 @@ game_state = "MENU"
 
 player_icon = pygame.image.load(sys.path[0] + "/stuff/player_icon.png")
 bot_icon = pygame.image.load(sys.path[0] + "/stuff/bot_icon.png")
+logo = pygame.image.load(sys.path[0] + "/stuff/logo.png")
+logo = pygame.transform.scale(logo, (500, 125))
 
 # Static variables
 
@@ -44,10 +46,10 @@ PLAYER_HEIGTH = 180
 
 BALL_SIZE = 25
 
-UP = -3
-DOWN = 3
+UP = -4
+DOWN = 4
 
-BALL_SPEED = 3
+BALL_SPEED = 4
 
 SELECTOR_SIZE = 64
 
@@ -259,6 +261,7 @@ def show_start_menu():
     pygame.draw.rect(window, RED, selector)
     window.blit(player_icon, ((WIDTH/2-50-(player_icon.get_width()/2)),HEIGTH/2+90-(player_icon.get_width()/2)))
     window.blit(bot_icon, ((WIDTH/2+50-(bot_icon.get_width()/2)),HEIGTH/2+90-(bot_icon.get_width()/2)))
+    window.blit(logo, ((WIDTH/2-(logo.get_width()/2)),(HEIGTH/2-300)))
     font_small.render_to(window, (WIDTH/2-(font_small.get_rect(TEXT_BOT_CHANGE).width/2), HEIGTH/2+150), TEXT_BOT_CHANGE, WHITE)
 
 def show_score():
@@ -278,7 +281,7 @@ def check_events():
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if game_state == "MENU":
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     game_state = "STARTED"
                     start_ball()
                 if event.key == pygame.K_RIGHT:
@@ -286,7 +289,7 @@ def check_events():
                 if event.key == pygame.K_LEFT:
                     bot_player = False
             elif game_state == "ENDED":
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     # Resets all the variables
                     game_state = "MENU"
                     winner = 0
