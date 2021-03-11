@@ -6,12 +6,19 @@ import os
 import random
 import sys
 import time
+import importlib.util
+import subprocess
+
+spec = importlib.util.find_spec("pygame")
+if spec is None:
+    print("PyGame is not installed. Trying to install it automatically.")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "pygame"])
 
 try:
     import pygame
     import pygame.freetype
 except ImportError as e:
-    print("Please install PyGame in order to run this game.\Bitte installiere PyGame, um dieses Spiel zu spielen.\n\npython3 -m pip install -U pygame --user")
+    print("Automatic installation failed. Please install PyGame in order to run this game.\Bitte installiere PyGame, um dieses Spiel zu spielen.\n\npython3 -m pip install -U pygame --user")
     time.sleep(5)
     sys.exit()
 
