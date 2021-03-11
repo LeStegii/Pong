@@ -22,12 +22,20 @@ clock = pygame.time.Clock()
 
 game_state = "MENU"
 
-# Images
-
+# Images and Sounds
 player_icon = pygame.image.load(sys.path[0] + "/stuff/player_icon.png")
 bot_icon = pygame.image.load(sys.path[0] + "/stuff/bot_icon.png")
+window_icon = pygame.image.load(sys.path[0] + "/stuff/icon.png")
 logo = pygame.image.load(sys.path[0] + "/stuff/logo.png")
 logo = pygame.transform.scale(logo, (500, 125))
+
+hit_sound = pygame.mixer.Sound(sys.path[0] + "/stuff/hit.mp3")
+hit_sound.set_volume(0.1)
+score_sound = pygame.mixer.Sound(sys.path[0] + "/stuff/score.mp3")
+score_sound.set_volume(0.1)
+
+def play_sound(sound):
+    pygame.mixer.Sound.play(sound)
 
 # Static variables
 
@@ -92,10 +100,9 @@ def get_start_y():
 # Window
 
 display = pygame.display
+display.set_icon(window_icon)
 window = display.set_mode((WIDTH, HEIGTH))
 display.set_caption("Pong")
-image = pygame.image.load(sys.path[0] + "/stuff/icon.png")
-display.set_icon(image)
 
 # Ball
 
@@ -110,22 +117,28 @@ def move_ball():
         switch_direction("y")
     if ball.left <= 0:
         add_point(2)
+        play_sound(score_sound)
         score_timer = pygame.time.get_ticks()
     if ball.right >= WIDTH:
         add_point(1)
+        play_sound(score_sound)
         score_timer = pygame.time.get_ticks()
 
 def check_ball_collision():
     if player1.colliderect(ball) and ball_move_x < 0:
         if abs(ball.left - player1.right) <= BALL_SPEED:
             switch_direction("x")
+            play_sound(hit_sound)
         elif abs(ball.bottom - player1.top) <= BALL_SPEED or abs(ball.top - player1.bottom) <= BALL_SPEED:
             switch_direction("y")
+            play_sound(hit_sound)
     if player2.colliderect(ball) and ball_move_x > 0:
         if abs(ball.right - player2.left) <= BALL_SPEED:
             switch_direction("x")
+            play_sound(hit_sound)
         elif abs(ball.bottom - player2.top) <= BALL_SPEED or abs(ball.top - player2.bottom) <= BALL_SPEED:
             switch_direction("y")
+            play_sound(hit_sound)
 
 
 def switch_direction(dir):
@@ -176,7 +189,7 @@ def select(pos):
 
 # Player
 
-winning_score = 1
+winning_score = 5
 winner = 0
 
 pressed = {}
@@ -283,11 +296,16 @@ def check_events():
             if game_state == "MENU":
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     game_state = "STARTED"
+                    play_sound(hit_sound)
                     start_ball()
                 if event.key == pygame.K_RIGHT:
-                    bot_player = True
+                    if not bot_player:
+                        bot_player = True
+                        play_sound(hit_sound)
                 if event.key == pygame.K_LEFT:
-                    bot_player = False
+                    if bot_player:
+                        bot_player = False
+                        play_sound(hit_sound)
             elif game_state == "ENDED":
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     # Resets all the variables
