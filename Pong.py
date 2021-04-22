@@ -68,6 +68,8 @@ BALL_SPEED = 4
 
 SELECTOR_SIZE = 64
 
+START_TICKS = 120 
+
 # Text
 
 TEXT_TITLE = "Press SPACE to start"
@@ -116,6 +118,12 @@ display.set_caption("Pong")
 ball_move_x = BALL_SPEED
 ball_move_y = BALL_SPEED
 
+ticks = START_TICKS
+
+def reset_ticks(): 
+    global ticks 
+    ticks = START_TICKS 
+
 def move_ball():
     global ball_move_x, ball_move_y, ball, score_timer
     ball.x += ball_move_x
@@ -149,9 +157,10 @@ def check_ball_collision():
 
 
 def switch_direction(dir):
-    global ball_move_x, ball_move_y
+    global ball_move_x, ball_move_y, ticks
     if dir == "x":
         ball_move_x *= -1 
+        ticks += 3
     elif dir == "y":
         ball_move_y *= -1 
 
@@ -235,6 +244,7 @@ def check_player_keys_up(event):
 
 def add_point(player):
     global winner, game_state
+    reset_ticks() 
     score[player] = score[player] + 1
     if score[player] >= winning_score:
         winner = player
@@ -325,6 +335,7 @@ def check_events():
                     ball_move_x = BALL_SPEED
                     ball_move_y = BALL_SPEED
                     score_timer = None
+                    reset_ticks()
                     player1.x, player1.y = get_start_x(1), get_start_y()
                     player2.x, player2.y = get_start_x(2), get_start_y()
                     start_ball()
@@ -340,4 +351,4 @@ while True:
     check_events()
     animate()
     display.flip()
-    clock.tick(120)
+    clock.tick(ticks)
