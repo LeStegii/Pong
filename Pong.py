@@ -18,7 +18,7 @@ try:
     import pygame
     import pygame.freetype
 except ImportError as e:
-    print("Automatic installation failed. Please install PyGame in order to run this game.\Bitte installiere PyGame, um dieses Spiel zu spielen.\n\npython3 -m pip install -U pygame --user")
+    print("Automatic installation failed. Please install PyGame in order to run this game.\nBitte installiere PyGame, um dieses Spiel zu spielen.\n\npython3 -m pip install -U pygame --user")
     time.sleep(5)
     sys.exit()
 
